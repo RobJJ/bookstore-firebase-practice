@@ -1,12 +1,33 @@
 import React, { useState, useEffect } from "react";
 import BookDataService from "../services/bookstore.services";
 //
-const AddBook = () => {
+const AddBook = ({ id, setBookId, getBooks }) => {
+  //
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [status, setStatus] = useState("Available");
   // const [flag, setFlag] = useState(true);
   const [message, setMessage] = useState({ error: false, msg: "" });
+  //
+  const editHandler = async () => {
+    setMessage("");
+    try {
+      const docSnap = await BookDataService.getBook(id);
+      // console.log("The docSnap is: ", docSnap.data);
+      setTitle(docSnap.data().title);
+      setAuthor(docSnap.data().author);
+      setStatus(docSnap.data().status);
+    } catch (error) {
+      setMessage({ error: true, msg: error.message });
+    }
+  };
+  //
+  useEffect(() => {
+    if (id !== undefined && id !== "") {
+      editHandler();
+    }
+  }, [id]);
+
   //
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +43,16 @@ const AddBook = () => {
     };
     // console.log(newBook);
     try {
-      await BookDataService.addBooks(newBook);
-      setMessage({ error: false, msg: "New Book added successfully!" });
+      if (id !== undefined && id !== "") {
+        await BookDataService.updateBook(id, newBook);
+        setBookId("");
+        getBooks();
+        setMessage({ error: false, msg: "Updated successfully!" });
+      } else {
+        await BookDataService.addBooks(newBook);
+        getBooks();
+        setMessage({ error: false, msg: "New Book added successfully!" });
+      }
     } catch (error) {
       setMessage({ error: true, msg: error.message });
     }

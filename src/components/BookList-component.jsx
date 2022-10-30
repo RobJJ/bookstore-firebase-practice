@@ -2,20 +2,11 @@ import React, { useEffect, useState } from "react";
 import BookDataService from "../services/bookstore.services";
 
 //
-const BookList = () => {
-  //
-  const [books, setBooks] = useState([]);
+const BookList = ({ getBookId, getBooks, books }) => {
   //
   useEffect(() => {
     getBooks();
   }, []);
-  //
-  const getBooks = async () => {
-    // use the defined method to get all the data from firestore
-    const data = await BookDataService.getAllBooks();
-    // setBooks - returns array with each document being an object containing the information we want. 4 props
-    setBooks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  };
   //
   const handleDelete = async (id) => {
     // remove book using passed in ID
@@ -24,7 +15,6 @@ const BookList = () => {
     getBooks();
   };
   //
-  const getBookId = (id) => {};
 
   //
   return (
@@ -51,13 +41,13 @@ const BookList = () => {
                   <span className="w-3/12">
                     <button
                       className="bg-blue-500 w-1/2"
-                      onClick={(e) => getBookId(book.id)}
+                      onClick={() => getBookId(book.id)}
                     >
                       Edit
                     </button>
                     <button
                       className="bg-red-500 w-1/2"
-                      onClick={(e) => handleDelete(book.id)}
+                      onClick={() => handleDelete(book.id)}
                     >
                       Delete
                     </button>
