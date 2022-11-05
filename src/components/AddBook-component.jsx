@@ -13,7 +13,7 @@ const AddBook = ({ id, setBookId, getBooks }) => {
     setMessage("");
     try {
       const docSnap = await BookDataService.getBook(id);
-      // console.log("The docSnap is: ", docSnap.data);
+      // Set values from docSnap. User can see the values to edit
       setTitle(docSnap.data().title);
       setAuthor(docSnap.data().author);
       setStatus(docSnap.data().status);
@@ -21,7 +21,7 @@ const AddBook = ({ id, setBookId, getBooks }) => {
       setMessage({ error: true, msg: error.message });
     }
   };
-  //
+  // Watching id.. if changed, this func will pass the values to the inputs
   useEffect(() => {
     if (id !== undefined && id !== "") {
       editHandler();
@@ -36,20 +36,24 @@ const AddBook = ({ id, setBookId, getBooks }) => {
       setMessage({ error: true, msg: "All fields are mandatory!" });
       return;
     }
+    //
     const newBook = {
       title,
       author,
       status,
     };
-    // console.log(newBook);
+    //
     try {
+      // Check if you're updating a book or adding a new book
       if (id !== undefined && id !== "") {
         await BookDataService.updateBook(id, newBook);
         setBookId("");
+        // update display list
         getBooks();
         setMessage({ error: false, msg: "Updated successfully!" });
       } else {
         await BookDataService.addBooks(newBook);
+        // update display list
         getBooks();
         setMessage({ error: false, msg: "New Book added successfully!" });
       }
